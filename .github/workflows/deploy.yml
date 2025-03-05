@@ -73,5 +73,4 @@ jobs:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
           github-token: ${{ secrets.GIT_TOKEN }}
           working-directory: ./
-          project-name: my-api
-          vercel-args: '--prod'
+          vercel-args: '--prod --yes'
