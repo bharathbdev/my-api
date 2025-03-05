@@ -47,3 +47,7 @@ docker push bharath7898/my-api:v1.0.0
 
 
 docker-compose pull
+
+
+
+http://54.183.163.85/api/data

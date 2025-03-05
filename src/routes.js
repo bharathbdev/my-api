@@ -13,7 +13,8 @@ router.post('/data', async (req, res) => {
 });
 router.get('/data', async (req, res) => {
     try {
-        const data = await Data.find();
+        let data = await Data.find();
+        data.push("hi god")
         res.status(200).send(data);
     } catch (error) {
         res.status(500).send({ error: 'An error occurred while fetching data' });
