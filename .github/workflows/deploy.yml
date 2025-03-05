@@ -41,6 +41,21 @@ jobs:
           echo "${{ secrets.EC2_KEY }}" > ec2-key.pem
           chmod 400 ec2-key.pem
           ssh -o StrictHostKeyChecking=no -i ec2-key.pem $EC2_USER@$EC2_HOST <<EOF
+            # Update the package index
+            sudo yum update -y
+
+            # Install Docker
+            sudo amazon-linux-extras install docker -y
+
+            # Start the Docker service
+            sudo service docker start
+
+            # Add the ec2-user to the docker group
+            sudo usermod -a -G docker $EC2_USER
+
+            # Enable Docker to start on boot
+            sudo systemctl enable docker
+
             # Pull the latest Docker image
             docker pull bharath7898/my-api:v1.0.0
 
