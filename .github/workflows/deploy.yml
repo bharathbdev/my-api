@@ -29,8 +29,8 @@ jobs:
 
       - name: Build and push Docker image
         run: |
-          docker build -t bharath7898/my-api:v1.0.2 .
-          docker push bharath7898/my-api:v1.0.2
+          docker build -t bharath7898/my-api:v1.0.4 .
+          docker push bharath7898/my-api:v1.0.4
 
       - name: Deploy to EC2
         env:
@@ -65,7 +65,7 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no -i ec2-key.pem $EC2_USER@$EC2_HOST <<EOF
             # Pull the latest Docker image
-            docker pull bharath7898/my-api:v1.0.1
+            docker pull bharath7898/my-api:v1.0.4
 
             # Stop and remove any existing container
             docker stop my-api || true
@@ -75,5 +75,5 @@ jobs:
             docker run -d --name mongo -v mongo-data:/data/db -e MONGO_INITDB_ROOT_USERNAME=admin -e MONGO_INITDB_ROOT_PASSWORD=admin -e MONGO_INITDB_DATABASE=mydatabase -p 27017:27017 mongo:4.4.6
 
             # Run the application container
-            docker run -d --name my-api -p 80:3000 --link mongo -e MONGODB_URI=mongodb://admin:admin@mongo:27017/mydatabase?authSource=admin bharath7898/my-api:v1.0.1
+            docker run -d --name my-api -p 80:3000 --link mongo -e MONGODB_URI=mongodb://admin:admin@mongo:27017/mydatabase?authSource=admin bharath7898/my-api:v1.0.4
           EOF
