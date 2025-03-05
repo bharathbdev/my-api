@@ -55,7 +55,15 @@ jobs:
 
             # Enable Docker to start on boot
             sudo systemctl enable docker
+          EOF
 
+      - name: Restart SSH Session
+        env:
+          EC2_USER: ${{ secrets.EC2_USER }}
+          EC2_HOST: ${{ secrets.EC2_HOST }}
+          EC2_KEY: ${{ secrets.EC2_KEY }}
+        run: |
+          ssh -o StrictHostKeyChecking=no -i ec2-key.pem $EC2_USER@$EC2_HOST <<EOF
             # Pull the latest Docker image
             docker pull bharath7898/my-api:v1.0.0
 
