@@ -7,13 +7,20 @@ services:
     depends_on:
       - mongo
     environment:
-      - MONGODB_URI=mongodb://admin:admin@mongo:27017/mydatabase
+      - MONGODB_URI=mongodb://admin:admin@mongo:27017/mydatabase?authSource=admin
 
   mongo:
     image: mongo:latest
+    container_name: mongo
     ports:
       - "27017:27017"
     environment:
       - MONGO_INITDB_ROOT_USERNAME=admin
       - MONGO_INITDB_ROOT_PASSWORD=admin
       - MONGO_INITDB_DATABASE=mydatabase
+    volumes:
+      - mongo-data:/data/db
+    restart: always  # Ensures MongoDB restarts if it crashes
+
+volumes:
+  mongo-data:  # Persistent storage for MongoDB

@@ -10,9 +10,12 @@ console.log("###starts")
 app.use(bodyParser.json());
 
 // MongoDB connection
-const mongoURI = process.env.MONGODB_URI || 'mongodb://admin:admin@mongodb:27017/mydatabase';
+const mongoURI = process.env.MONGODB_URI || 'mongodb://admin:admin@mongo:27017/mydatabase?authSource=admin';
 console.log("###process.env.MONGODB_URI", process.env.MONGODB_URI, "###mongoURI", mongoURI)
-mongoose.connect(mongoURI);
+mongoose.connect(mongoURI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+});
 
 mongoose.connection.once('open', () => {
     console.log('##Connected to MongoDB');

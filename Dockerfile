@@ -8,7 +8,7 @@ RUN npm install
 COPY . .
 
 ENV PORT=3000
-ENV MONGODB_URI=mongodb://admin:admin@mongodb:27017/mydatabase
+ENV MONGODB_URI=mongodb://admin:admin@mongo:27017/mydatabase?authSource=admin
 
 EXPOSE 3000
 

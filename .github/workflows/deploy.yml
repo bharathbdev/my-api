@@ -72,8 +72,8 @@ jobs:
             docker rm my-api || true
 
             # Run MongoDB container with volume
-            docker run -d --name mongodb -v mongo-data:/data/db -e MONGO_INITDB_ROOT_USERNAME=admin -e MONGO_INITDB_ROOT_PASSWORD=admin -e MONGO_INITDB_DATABASE=mydatabase -p 27017:27017 mongo:4.4.6
+            docker run -d --name mongo -v mongo-data:/data/db -e MONGO_INITDB_ROOT_USERNAME=admin -e MONGO_INITDB_ROOT_PASSWORD=admin -e MONGO_INITDB_DATABASE=mydatabase -p 27017:27017 mongo:4.4.6
 
             # Run the application container
-            docker run -d --name my-api -p 80:3000 --link mongodb -e MONGODB_URI=mongodb://admin:admin@mongodb:27017/mydatabase bharath7898/my-api:v1.0.1
+            docker run -d --name my-api -p 80:3000 --link mongo -e MONGODB_URI=mongodb://admin:admin@mongo:27017/mydatabase?authSource=admin bharath7898/my-api:v1.0.1
           EOF
