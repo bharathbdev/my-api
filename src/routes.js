@@ -11,5 +11,13 @@ router.post('/data', async (req, res) => {
 
     res.status(201).send(newData);
 });
+router.get('/data', async (req, res) => {
+    try {
+        const data = await Data.find();
+        res.status(200).send(data);
+    } catch (error) {
+        res.status(500).send({ error: 'An error occurred while fetching data' });
+    }
+});
 
 module.exports = router;
