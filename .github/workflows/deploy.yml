@@ -29,7 +29,7 @@ jobs:
   push-to-dockerhub:
     runs-on: ubuntu-20.04
     needs: build # Ensures this job runs after the build job
-    if: github.event_name == 'workflow_dispatch' # Only runs if manually triggered
+    if: github.event.inputs.job == 'push-to-dockerhub' # Only runs if manually triggered with the correct input
 
     steps:
       - name: Checkout code
@@ -49,7 +49,7 @@ jobs:
   deploy-to-ec2:
     runs-on: ubuntu-20.04
     needs: push-to-dockerhub # Ensures this job runs after the push-to-dockerhub job
-    if: github.event_name == 'workflow_dispatch' # Only runs if manually triggered
+    if: github.event.inputs.job == 'deploy-to-ec2' # Only runs if manually triggered with the correct input
 
     steps:
       - name: Checkout code
