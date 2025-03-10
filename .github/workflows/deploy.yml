@@ -4,11 +4,22 @@ on:
   push:
     branches:
       - main
-  workflow_dispatch: # Allows manual triggering of the push and deploy jobs
+  workflow_dispatch:
+    inputs:
+      job:
+        description: 'Job to run'
+        required: true
+        default: 'build'
+        type: choice
+        options:
+          - build
+          - push-to-dockerhub
+          - deploy-to-ec2
 
 jobs:
   build:
     runs-on: ubuntu-20.04
+    if: github.event_name == 'push' || github.event.inputs.job == 'build'
 
     steps:
       - name: Checkout code
@@ -28,8 +39,8 @@ jobs:
 
   push-to-dockerhub:
     runs-on: ubuntu-20.04
-    needs: build # Ensures this job runs after the build job
-    if: github.event.inputs.job == 'push-to-dockerhub' # Only runs if manually triggered with the correct input
+    needs: build
+    if: github.event.inputs.job == 'push-to-dockerhub'
 
     steps:
       - name: Checkout code
@@ -48,8 +59,8 @@ jobs:
 
   deploy-to-ec2:
     runs-on: ubuntu-20.04
-    needs: push-to-dockerhub # Ensures this job runs after the push-to-dockerhub job
-    if: github.event.inputs.job == 'deploy-to-ec2' # Only runs if manually triggered with the correct input
+    needs: push-to-dockerhub
+    if: github.event.inputs.job == 'deploy-to-ec2'
 
     steps:
       - name: Checkout code
