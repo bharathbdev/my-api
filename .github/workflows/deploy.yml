@@ -22,9 +22,6 @@ jobs:
     if: github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && github.event.inputs.job == 'build')
 
     steps:
-      - name: Debug Event Payload
-        run: echo '${{ toJson(github.event) }}'
-
       - name: Checkout code
         uses: actions/checkout@v2
 
@@ -37,8 +34,7 @@ jobs:
         run: npm install
 
       - name: Build Docker image
-        run: |
-          docker build -t bharath7898/my-api:latest .
+        run: docker build -t bharath7898/my-api:latest .
 
   push-to-dockerhub:
     runs-on: ubuntu-20.04
@@ -46,14 +42,11 @@ jobs:
     if: github.event_name == 'workflow_dispatch' && github.event.inputs.job == 'push-to-dockerhub'
 
     steps:
-      - name: Debug Inputs
-        run: echo "Job selected: ${{ github.event.inputs.job }}"
-
       - name: Checkout code
         uses: actions/checkout@v2
 
       - name: Login to DockerHub
-        uses: docker/login-action@v1
+        uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
@@ -69,9 +62,6 @@ jobs:
     if: github.event_name == 'workflow_dispatch' && github.event.inputs.job == 'deploy-to-ec2'
 
     steps:
-      - name: Debug Inputs
-        run: echo "Job selected: ${{ github.event.inputs.job }}"
-
       - name: Checkout code
         uses: actions/checkout@v2
 
