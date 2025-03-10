@@ -13,8 +13,8 @@ on:
         type: choice
         options:
           - build
-          - push-to-dockerhub
-          - deploy-to-ec2
+          - build2
+          - build3
 
 jobs:
   build:
@@ -36,10 +36,10 @@ jobs:
       - name: Build Docker image
         run: docker build -t bharath7898/my-api:latest .
 
-  push-to-dockerhub:
+  build2:
     runs-on: ubuntu-20.04
     needs: build
-    if: github.event_name == 'workflow_dispatch' && github.event.inputs.job == 'push-to-dockerhub'
+    if: github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && github.event.inputs.job == 'build2')
 
     steps:
       - name: Checkout code
@@ -56,10 +56,10 @@ jobs:
           docker tag bharath7898/my-api:latest bharath7898/my-api:v1.0.4
           docker push bharath7898/my-api:v1.0.4
 
-  deploy-to-ec2:
+  build3:
     runs-on: ubuntu-20.04
-    needs: push-to-dockerhub
-    if: github.event_name == 'workflow_dispatch' && github.event.inputs.job == 'deploy-to-ec2'
+    needs: build2
+    if: github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && github.event.inputs.job == 'build3')
 
     steps:
       - name: Checkout code
