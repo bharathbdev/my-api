@@ -22,6 +22,9 @@ jobs:
     if: github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && github.event.inputs.job == 'build')
 
     steps:
+      - name: Debug Event Payload
+        run: echo '${{ toJson(github.event) }}'
+
       - name: Checkout code
         uses: actions/checkout@v2
 
@@ -43,6 +46,9 @@ jobs:
     if: github.event_name == 'workflow_dispatch' && github.event.inputs.job == 'push-to-dockerhub'
 
     steps:
+      - name: Debug Inputs
+        run: echo "Job selected: ${{ github.event.inputs.job }}"
+
       - name: Checkout code
         uses: actions/checkout@v2
 
@@ -63,6 +69,9 @@ jobs:
     if: github.event_name == 'workflow_dispatch' && github.event.inputs.job == 'deploy-to-ec2'
 
     steps:
+      - name: Debug Inputs
+        run: echo "Job selected: ${{ github.event.inputs.job }}"
+
       - name: Checkout code
         uses: actions/checkout@v2
 
@@ -75,42 +84,25 @@ jobs:
           echo "${{ secrets.EC2_KEY }}" > ec2-key.pem
           chmod 400 ec2-key.pem
           ssh -o StrictHostKeyChecking=no -i ec2-key.pem $EC2_USER@$EC2_HOST <<EOF
-            # Update the package index
             sudo dnf update -y
-
-            # Install Docker
             sudo dnf install docker -y
-
-            # Start the Docker service
             sudo systemctl start docker
-
-            # Add the ec2-user to the docker group
             sudo usermod -a -G docker $EC2_USER
-
-            # Enable Docker to start on boot
             sudo systemctl enable docker
           EOF
 
-      - name: Restart SSH Session
+      - name: Restart SSH Session and Deploy
         env:
           EC2_USER: ${{ secrets.EC2_USER }}
           EC2_HOST: ${{ secrets.EC2_HOST }}
           EC2_KEY: ${{ secrets.EC2_KEY }}
         run: |
           ssh -o StrictHostKeyChecking=no -i ec2-key.pem $EC2_USER@$EC2_HOST <<EOF
-            # Pull the latest Docker image
             docker pull bharath7898/my-api:v1.0.4
-
-            # Stop and remove any existing container
             docker stop my-api || true
             docker rm my-api || true
-
-            # Stop and remove any existing MongoDB container
             docker stop mongo || true
             docker rm mongo || true
-
-            # Run MongoDB container with volume
             docker run -d --name mongo -v mongo-data:/data/db -e MONGO_INITDB_ROOT_USERNAME=admin -e MONGO_INITDB_ROOT_PASSWORD=admin -e MONGO_INITDB_DATABASE=mydatabase -p 27017:27017 mongo:4.4.6
-
-            # Run the application container
             docker run -d --name my-api -p 80:3000 --link mongo -e MONGODB_URI=mongodb://admin:admin@mongo:27017/mydatabase?authSource=admin bharath7898/my-api:v1.0.4
+          EOF
