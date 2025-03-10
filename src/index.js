@@ -9,7 +9,9 @@ console.log("###starts")
 // Middleware
 app.use(bodyParser.json());
 
-// MongoDB connection
+// MongoDB connection for local and docker mongodb
+//const mongoURI = process.env.MONGODB_URI || 'mongodb://admin:admin@localhost:27017/mydatabase?authSource=admin';
+// MongoDB connection for docker and docker mongodb
 const mongoURI = process.env.MONGODB_URI || 'mongodb://admin:admin@mongo:27017/mydatabase?authSource=admin';
 console.log("###process.env.MONGODB_URI", process.env.MONGODB_URI, "###mongoURI", mongoURI)
 mongoose.connect(mongoURI, {
