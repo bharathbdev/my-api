@@ -7,9 +7,8 @@ on:
   workflow_dispatch:
     inputs:
       job:
-        description: 'Select a job to run'
+        description: 'Select a job to run manually'
         required: true
-        default: 'job2'
         type: choice
         options:
           - job2
@@ -18,6 +17,7 @@ on:
 jobs:
   job1:
     runs-on: ubuntu-latest
+    if: github.event_name == 'push'
     steps:
       - name: Print message
         run: echo "Job 1 is running automatically on push to main"
