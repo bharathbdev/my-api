@@ -1,4 +1,4 @@
-name: Deploy Node.js API
+name: Simple Workflow
 
 on:
   push:
@@ -7,92 +7,31 @@ on:
   workflow_dispatch:
     inputs:
       job:
-        description: 'Job to run'
+        description: 'Select a job to run'
         required: true
-        default: 'build'
+        default: 'job2'
         type: choice
         options:
-          - build
-          - build2
-          - build3
+          - job2
+          - job3
 
 jobs:
-  build:
-    runs-on: ubuntu-20.04
-    if: github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && github.event.inputs.job == 'build')
-
+  job1:
+    runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+      - name: Print message
+        run: echo "Job 1 is running automatically on push to main"
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: '16'
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Build Docker image
-        run: docker build -t bharath7898/my-api:latest .
-
-  build2:
-    runs-on: ubuntu-20.04
-    needs: build
-    if: github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && github.event.inputs.job == 'build2')
-
+  job2:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.job == 'job2'
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+      - name: Print message
+        run: echo "Job 2 is running manually"
 
-      - name: Login to DockerHub
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-
-      - name: Push Docker image
-        run: |
-          docker tag bharath7898/my-api:latest bharath7898/my-api:v1.0.4
-          docker push bharath7898/my-api:v1.0.4
-
-  build3:
-    runs-on: ubuntu-20.04
-    needs: build2
-    if: github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && github.event.inputs.job == 'build3')
-
+  job3:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.job == 'job3'
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Deploy to EC2
-        env:
-          EC2_USER: ${{ secrets.EC2_USER }}
-          EC2_HOST: ${{ secrets.EC2_HOST }}
-          EC2_KEY: ${{ secrets.EC2_KEY }}
-        run: |
-          echo "${{ secrets.EC2_KEY }}" > ec2-key.pem
-          chmod 400 ec2-key.pem
-          ssh -o StrictHostKeyChecking=no -i ec2-key.pem $EC2_USER@$EC2_HOST <<EOF
-            sudo dnf update -y
-            sudo dnf install docker -y
-            sudo systemctl start docker
-            sudo usermod -a -G docker $EC2_USER
-            sudo systemctl enable docker
-          EOF
-
-      - name: Restart SSH Session and Deploy
-        env:
-          EC2_USER: ${{ secrets.EC2_USER }}
-          EC2_HOST: ${{ secrets.EC2_HOST }}
-          EC2_KEY: ${{ secrets.EC2_KEY }}
-        run: |
-          ssh -o StrictHostKeyChecking=no -i ec2-key.pem $EC2_USER@$EC2_HOST <<EOF
-            docker pull bharath7898/my-api:v1.0.4
-            docker stop my-api || true
-            docker rm my-api || true
-            docker stop mongo || true
-            docker rm mongo || true
-            docker run -d --name mongo -v mongo-data:/data/db -e MONGO_INITDB_ROOT_USERNAME=admin -e MONGO_INITDB_ROOT_PASSWORD=admin -e MONGO_INITDB_DATABASE=mydatabase -p 27017:27017 mongo:4.4.6
-            docker run -d --name my-api -p 80:3000 --link mongo -e MONGODB_URI=mongodb://admin:admin@mongo:27017/mydatabase?authSource=admin bharath7898/my-api:v1.0.4
-          EOF
+      - name: Print message
+        run: echo "Job 3 is running manually"
