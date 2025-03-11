@@ -30,9 +30,6 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Build Docker image
-        run: docker build -t bharath7898/my-api:latest .
-
   build2:
     runs-on: ubuntu-20.04
     if: github.event_name == 'workflow_dispatch' && github.event.inputs.job == 'build2'
@@ -47,7 +44,6 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Push Docker image
-      - name: Build and push Docker image
         run: |
           docker build -t bharath7898/my-api:v1.0.4 .
           docker push bharath7898/my-api:v1.0.4
