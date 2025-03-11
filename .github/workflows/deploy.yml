@@ -47,8 +47,9 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Push Docker image
+      - name: Build and push Docker image
         run: |
-          docker tag bharath7898/my-api:latest bharath7898/my-api:v1.0.4
+          docker build -t bharath7898/my-api:v1.0.4 .
           docker push bharath7898/my-api:v1.0.4
 
   build3:
