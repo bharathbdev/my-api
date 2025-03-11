@@ -14,7 +14,7 @@ router.post('/data', async (req, res) => {
 router.get('/data', async (req, res) => {
     try {
         let data = await Data.find();
-        data.push("hi god")
+        data.push("hi god2")
         res.status(200).send(data);
     } catch (error) {
         res.status(500).send({ error: 'An error occurred while fetching data' });
